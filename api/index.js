@@ -5,19 +5,30 @@ let currentStreamUrl = 'https://radio.b3ck.com/listen/b3cks-radio/radio.mp3';
 
 module.exports = (req, res) => {
     if (req.method === 'POST') {
+        const handlePayload = (payload) => {
+            if (payload && payload.url) {
+                currentStreamUrl = payload.url;
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ ok: true, stream: currentStreamUrl }));
+            }
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            return res.end(JSON.stringify({ ok: false, error: 'Missing url' }));
+        };
+
+        if (req.body && typeof req.body === 'object') {
+            return handlePayload(req.body);
+        }
+
         let body = '';
         req.on('data', chunk => { body += chunk; });
         req.on('end', () => {
             try {
-                const data = JSON.parse(body);
-                if (data.url) {
-                    currentStreamUrl = data.url;
-                    res.writeHead(200, { 'Content-Type': 'application/json' });
-                    return res.end(JSON.stringify({ ok: true, stream: currentStreamUrl }));
-                }
-            } catch (e) {}
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ ok: false }));
+                const data = JSON.parse(body || '{}');
+                return handlePayload(data);
+            } catch (e) {
+                res.writeHead(400, { 'Content-Type': 'application/json' });
+                return res.end(JSON.stringify({ ok: false, error: e.message }));
+            }
         });
         return;
     }
