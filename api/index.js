@@ -4,8 +4,7 @@ const http = require('http');
 let currentStreamUrl = 'https://radio.b3ck.com/listen/b3cks-radio/radio.mp3';
 
 module.exports = (req, res) => {
-    // 1. Endpoint /api/play untuk bot ganti lagu
-    if (req.url.startsWith('/api/play') && req.method === 'POST') {
+    if (req.method === 'POST') {
         let body = '';
         req.on('data', chunk => { body += chunk; });
         req.on('end', () => {
@@ -23,7 +22,6 @@ module.exports = (req, res) => {
         return;
     }
 
-    // 2. Direct streaming proxy untuk Highrise Room
     res.writeHead(200, {
         'Content-Type': 'audio/mpeg',
         'Cache-Control': 'no-cache, no-store, must-revalidate',
