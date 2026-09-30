@@ -1,0 +1,10 @@
+{
+  "name": "highrise-radio-relay",
+  "version": "1.0.0",
+  "description": "Standalone real-time audio streaming relay for Highrise Custom Radio",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {}
+}
