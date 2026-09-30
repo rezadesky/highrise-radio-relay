@@ -22,14 +22,6 @@ module.exports = (req, res) => {
         return;
     }
 
-    res.writeHead(200, {
-        'Content-Type': 'audio/mpeg',
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Connection': 'keep-alive',
-        'Access-Control-Allow-Origin': '*',
-        'Icy-Name': 'Highrise Live Stream'
-    });
-
     const clientLib = currentStreamUrl.startsWith('https') ? https : http;
     const streamReq = clientLib.get(currentStreamUrl, {
         headers: {
@@ -37,6 +29,21 @@ module.exports = (req, res) => {
             'Accept': '*/*'
         }
     }, (streamRes) => {
+        res.writeHead(200, {
+            'Content-Type': 'audio/mpeg',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Connection': 'keep-alive',
+            'Access-Control-Allow-Origin': '*',
+            'icy-notice1': '<BR>This stream requires a compliant audio player<BR>',
+            'icy-notice2': 'Highrise Radio Relay<BR>',
+            'icy-name': 'Highrise Live Radio',
+            'icy-genre': 'Various',
+            'icy-url': 'https://highrise-radio-relay.vercel.app',
+            'icy-pub': '1',
+            'icy-br': '128',
+            'icy-sr': '44100'
+        });
+
         streamRes.pipe(res);
     });
 
